@@ -13,12 +13,10 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
-	}
+	viper.SetConfigFile(".env")
+	_ = viper.ReadInConfig()
 
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
