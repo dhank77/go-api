@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 
 	"go-api/config"
 
@@ -12,15 +11,7 @@ import (
 var DB *pgx.Conn
 
 func Connect(cfg *config.Config) error {
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
-		cfg.DBUser,
-		cfg.DBPassword,
-		cfg.DBHost,
-		cfg.DBPort,
-		cfg.DBName,
-	)
-
-	conn, err := pgx.Connect(context.Background(), dsn)
+	conn, err := pgx.Connect(context.Background(), cfg.DatabaseURL)
 	if err != nil {
 		return err
 	}
