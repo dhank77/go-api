@@ -10,6 +10,8 @@ import (
 var DB *sql.DB
 
 func InitDB(connectionString string) (*sql.DB, error) {
+	log.Printf("Connecting to database with URL length: %d", len(connectionString))
+
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return nil, err
