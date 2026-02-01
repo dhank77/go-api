@@ -11,7 +11,16 @@ import (
 var Conn *pgx.Conn
 
 func InitDB() error {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	// Parse connection string and disable prepared statement cache for transaction pooler
+	config, err := pgx.ParseConfig(os.Getenv("DATABASE_URL"))
+	if err != nil {
+		return err
+	}
+
+	// Disable prepared statement cache (required for Supabase transaction pooler)
+	config.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+
+	conn, err := pgx.ConnectConfig(context.Background(), config)
 	if err != nil {
 		return err
 	}
