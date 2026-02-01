@@ -39,7 +39,6 @@ func (r *ProductRepository) FindByID(id int) (*models.Product, error) {
 	return &p, nil
 }
 
-// FindByIDWithCategory returns product with category name using JOIN
 func (r *ProductRepository) FindByIDWithCategory(id int) (*models.ProductDetail, error) {
 	var p models.ProductDetail
 	err := database.DB.QueryRow(
