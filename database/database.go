@@ -1,37 +1,34 @@
 package database
 
 import (
-	"database/sql"
+	"context"
 	"log"
+	"os"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5"
 )
 
-var DB *sql.DB
+var Conn *pgx.Conn
 
-func InitDB(connectionString string) (*sql.DB, error) {
-	log.Printf("Connecting to database...")
-
-	db, err := sql.Open("postgres", connectionString)
+func InitDB() error {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	err = db.Ping()
-	if err != nil {
-		return nil, err
+	// Test connection
+	var version string
+	if err := conn.QueryRow(context.Background(), "SELECT version()").Scan(&version); err != nil {
+		return err
 	}
 
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(5)
-
-	DB = db
-	log.Println("Database connected successfully")
-	return db, nil
+	Conn = conn
+	log.Println("Connected to:", version)
+	return nil
 }
 
 func Close() {
-	if DB != nil {
-		DB.Close()
+	if Conn != nil {
+		Conn.Close(context.Background())
 	}
 }

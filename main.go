@@ -5,21 +5,20 @@ import (
 	"log"
 	"net/http"
 
-	"go-api/config"
 	"go-api/database"
 	"go-api/providers"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// Load config
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		log.Fatal("Failed to load config:", err)
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system env")
 	}
 
 	// Connect to database
-	_, err = database.InitDB(cfg.DatabaseURL)
-	if err != nil {
+	if err := database.InitDB(); err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	defer database.Close()
