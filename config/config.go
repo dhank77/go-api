@@ -9,15 +9,17 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
+	// Read from environment variables
 	viper.AutomaticEnv()
+	viper.BindEnv("DATABASE_URL")
 
+	// Read from .env file as fallback
+	viper.SetConfigType("env")
 	viper.SetConfigFile(".env")
 	_ = viper.ReadInConfig()
 
 	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
-		return nil, err
-	}
+	config.DatabaseURL = viper.GetString("DATABASE_URL")
 
 	return &config, nil
 }

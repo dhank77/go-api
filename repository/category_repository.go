@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"context"
-
 	"go-api/database"
 	"go-api/models"
 )
@@ -14,8 +12,7 @@ func NewCategoryRepository() *CategoryRepository {
 }
 
 func (r *CategoryRepository) FindAll() ([]models.Category, error) {
-	rows, err := database.DB.Query(context.Background(),
-		"SELECT id, name, description FROM categories ORDER BY id")
+	rows, err := database.DB.Query("SELECT id, name, description FROM categories ORDER BY id")
 	if err != nil {
 		return nil, err
 	}
@@ -34,8 +31,7 @@ func (r *CategoryRepository) FindAll() ([]models.Category, error) {
 
 func (r *CategoryRepository) FindByID(id int) (*models.Category, error) {
 	var cat models.Category
-	err := database.DB.QueryRow(context.Background(),
-		"SELECT id, name, description FROM categories WHERE id = $1", id).
+	err := database.DB.QueryRow("SELECT id, name, description FROM categories WHERE id = $1", id).
 		Scan(&cat.ID, &cat.Name, &cat.Description)
 	if err != nil {
 		return nil, err
@@ -44,20 +40,19 @@ func (r *CategoryRepository) FindByID(id int) (*models.Category, error) {
 }
 
 func (r *CategoryRepository) Create(cat *models.Category) error {
-	return database.DB.QueryRow(context.Background(),
+	return database.DB.QueryRow(
 		"INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING id",
 		cat.Name, cat.Description).Scan(&cat.ID)
 }
 
 func (r *CategoryRepository) Update(cat *models.Category) error {
-	_, err := database.DB.Exec(context.Background(),
+	_, err := database.DB.Exec(
 		"UPDATE categories SET name = $1, description = $2 WHERE id = $3",
 		cat.Name, cat.Description, cat.ID)
 	return err
 }
 
 func (r *CategoryRepository) Delete(id int) error {
-	_, err := database.DB.Exec(context.Background(),
-		"DELETE FROM categories WHERE id = $1", id)
+	_, err := database.DB.Exec("DELETE FROM categories WHERE id = $1", id)
 	return err
 }

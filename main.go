@@ -18,11 +18,11 @@ func main() {
 	}
 
 	// Connect to database
-	if err := database.Connect(cfg); err != nil {
+	_, err = database.InitDB(cfg.DatabaseURL)
+	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	defer database.Close()
-	fmt.Println("Connected to database!")
 
 	// Register all services
 	handlers := providers.RegisterServices()
