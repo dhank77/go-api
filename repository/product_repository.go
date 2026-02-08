@@ -13,9 +13,18 @@ func NewProductRepository() *ProductRepository {
 	return &ProductRepository{}
 }
 
-func (r *ProductRepository) FindAll() ([]models.Product, error) {
-	rows, err := database.Conn.Query(context.Background(),
-		"SELECT id, name, price, stock, category_id FROM products ORDER BY id")
+func (r *ProductRepository) FindAll(nameFilter string) ([]models.Product, error) {
+	query := "SELECT id, name, price, stock, category_id FROM products"
+	args := []interface{}{}
+
+	if nameFilter != "" {
+		query += " WHERE name ILIKE $1"
+		args = append(args, "%"+nameFilter+"%")
+	}
+
+	query += " ORDER BY id"
+
+	rows, err := database.Conn.Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
