@@ -25,14 +25,15 @@ func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem
 	details := make([]models.TransactionDetail, 0)
 
 	for _, item := range items {
-		var productPrice, stock int
+		var productPrice float64
+		var stock int
 		var productName string
 
 		err := tx.QueryRow(context.Background(),
 			"SELECT name, price, stock FROM products WHERE id = $1", item.ProductID).
 			Scan(&productName, &productPrice, &stock)
 		if err != nil {
-			return nil, fmt.Errorf("product id %d not found", item.ProductID)
+			return nil, fmt.Errorf("product id %d not found: %v", item.ProductID, err)
 		}
 
 		if stock < item.Quantity {
@@ -40,7 +41,7 @@ func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem
 				productName, stock, item.Quantity)
 		}
 
-		subtotal := productPrice * item.Quantity
+		subtotal := int(productPrice) * item.Quantity
 		totalAmount += subtotal
 
 		_, err = tx.Exec(context.Background(),
