@@ -35,6 +35,8 @@ func main() {
 	http.HandleFunc("/products", handlers.ProductHandler.Handle)
 	http.HandleFunc("/products/", handlers.ProductHandler.Handle)
 	http.HandleFunc("/checkout", handlers.TransactionHandler.HandleCheckout)
+	http.HandleFunc("/api/report", handlers.ReportHandler.Handle)
+	http.HandleFunc("/api/report/", handlers.ReportHandler.Handle)
 
 	fmt.Println("Server running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
